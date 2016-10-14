@@ -1,0 +1,24 @@
+package salaDeChat;
+
+import java.io.*;
+
+public class ClienThread extends Thread{
+
+	DataInputStream in;
+	
+	public ClienThread(DataInputStream in){
+		super();
+		this.in = in;
+	}
+	
+	public void run(){
+		try {
+			while(in.available() > 0){		//mientras haya algo que sacar
+				System.out.println(in.readUTF());
+			}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+}

@@ -1,0 +1,64 @@
+package salaDeChat;
+
+import java.io.*;
+import java.net.*;
+import java.util.*;
+
+public class Cliente {
+	
+	Socket cliSocket;
+	String nombre;
+	
+	public Cliente(){
+		
+	}
+	
+	public void iniciar(String ip, int puerto){
+		Scanner teclado = new Scanner(System.in);
+		String mensajeOut = " ";
+		DataOutputStream out = null;
+		DataInputStream in = null;
+		System.out.println("Ingrese su nombre de usuario: ");
+		this.nombre = teclado.nextLine();
+		System.out.println("Ingrese nro. de sala a acceder: (1, 2 o 3): ");
+		try {
+			this.cliSocket = new Socket(ip,puerto);
+			out = new DataOutputStream(this.cliSocket.getOutputStream());
+			out.writeUTF(teclado.nextLine());
+		} catch (UnknownHostException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		try {
+			out = new DataOutputStream(this.cliSocket.getOutputStream());
+			in = new DataInputStream(this.cliSocket.getInputStream());
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		new ClienThread(in).start();					//Este imprime todo lo que se escribe en el chat
+		while(!mensajeOut.equals(new String("/quit")) && !mensajeOut.equals(new String("/sala"))){			//si en el chat se escribe /quit ó /sala se sale ó se cambia de sala respectivamente
+			mensajeOut = this.nombre + ": " + teclado.nextLine();
+			try {
+				out.writeUTF(mensajeOut);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		try {
+			out.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	public static void main(String[] args) {
+		Cliente c = new Cliente();
+		c.iniciar("192.168.1.37",4444);
+	}
+}

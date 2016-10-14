@@ -1,0 +1,32 @@
+package salaDeChat;
+
+import java.io.*;
+
+public class ClienThread extends Thread{
+
+	DataInputStream in;
+	
+	public ClienThread(DataInputStream in){
+		super();
+		this.in = in;
+	}
+	
+	public void run(){
+		try {
+			boolean abierto = true;
+			String mje;
+			while(abierto){		
+				if(this.in.available() > 0){		//si hay algo que leer
+					mje = in.readUTF();
+					if(mje.split(" ")[1] == new String("/quit"))
+						abierto = false;
+					else
+						System.out.println(in.readUTF());
+				}
+			}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+}

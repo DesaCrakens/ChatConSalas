@@ -1,0 +1,59 @@
+package salaDeChat;
+
+import java.io.DataInputStream;
+import java.io.IOException;
+import java.net.*;
+import java.util.*;
+
+
+public class Listener extends Thread{
+	
+	ServerSocket svSocket;
+	LinkedList<Socket> sala1;
+	LinkedList<Socket> sala2;
+	LinkedList<Socket> sala3;
+	
+	public Listener(){
+		try {
+			svSocket = new ServerSocket(4444);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		sala = new LinkedList<Socket>();
+	}
+	
+	public void run(){
+		try {
+			DataInputStream in = null;
+			int nroSala;
+			while(true){
+				Socket s = this.svSocket.accept();
+				in = new DataInputStream(s.getInputStream());
+				nroSala = in.readInt();
+				if(nroSala == 1){
+					sala1.add(s);
+					new ServerThread(s,sala1).start();
+				}
+				else{
+					if(nroSala == 2){
+						sala2.add(s);
+						new ServerThread(s,sala2).start();
+					}
+					else{
+						sala3.add(s);
+						new ServerThread(s,sala3).start();
+					}
+				}
+			}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	public static void main(String[] args) {
+		new Listener().start();
+	}
+	
+}

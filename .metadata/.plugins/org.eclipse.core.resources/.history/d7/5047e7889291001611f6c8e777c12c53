@@ -1,0 +1,57 @@
+package salaDeChat;
+
+import java.io.*;
+import java.net.*;
+import java.util.*;
+
+public class Cliente {
+	
+	Socket cliSocket;
+	
+	public Cliente(String ip, int puerto){
+		try {
+			cliSocket = new Socket(ip,puerto);
+		} catch (UnknownHostException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	public void iniciar(){
+		Scanner teclado = new Scanner(System.in);
+		String mensajeOut = null;
+		DataOutputStream out = null;
+		DataInputStream in = null;
+		try {
+			out = new DataOutputStream(this.cliSocket.getOutputStream());
+			in = new DataInputStream(this.cliSocket.getInputStream());
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		new ClienThread(in).start();
+		while(!mensajeOut.equals(new String("/quit"))){
+			mensajeOut = teclado.nextLine();
+			try {
+				out.writeUTF(mensajeOut);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		try {
+			out.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	public static void main(String[] args) {
+		Cliente c = new Cliente("192.168.1.37",4444);
+		c.iniciar();
+	}
+}

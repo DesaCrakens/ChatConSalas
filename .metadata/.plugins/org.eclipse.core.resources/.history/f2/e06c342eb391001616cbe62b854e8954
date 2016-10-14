@@ -1,0 +1,40 @@
+package salaDeChat;
+
+import java.io.IOException;
+import java.net.*;
+import java.util.*;
+
+
+public class Listener extends Thread{
+	
+	ServerSocket svSocket;
+	LinkedList<Socket> sala;
+	
+	public Listener(){
+		try {
+			svSocket = new ServerSocket(4444);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		sala = new LinkedList<Socket>();
+	}
+	
+	public void run(){
+		try {
+			while(true){
+				Socket s = this.svSocket.accept();
+				sala.add(s);
+				new ServerThread(s,sala).start();
+			}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	public static void main(String[] args) {
+		new Listener().start();
+	}
+	
+}

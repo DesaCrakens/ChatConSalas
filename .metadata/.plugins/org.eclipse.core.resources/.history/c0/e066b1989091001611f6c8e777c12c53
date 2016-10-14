@@ -1,0 +1,17 @@
+package salaDeChat;
+
+import java.io.*;
+
+public class ClienThread extends Thread{
+
+	DataInputStream in;
+	
+	public ClienThread(DataInputStream in){
+		super();
+		this.in = in;
+	}
+	
+	public void run(){
+		
+	}
+}

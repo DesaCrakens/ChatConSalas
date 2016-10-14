@@ -1,0 +1,32 @@
+package salaDeChat;
+
+import java.io.*;
+import java.util.*;
+import java.net.*;
+
+public class ServerThread extends Thread{
+
+	Socket s;
+	LinkedList <Socket> listaDifusion;
+	
+	public ServerThread(Socket sock, LinkedList<Socket> lD){
+		super();
+		this.s = sock;
+		this.listaDifusion = lD;
+	}
+	
+	public void run(){
+		String mensajeIn = null;
+		String mensajeOut = null;
+		try {
+			DataOutputStream out = new DataOutputStream(this.s.getOutputStream());
+			DataInputStream in = new DataInputStream(this.s.getInputStream());
+			while(true){
+				if(in.available() > 0){
+					
+				}
+			}
+		}
+	}
+	
+}

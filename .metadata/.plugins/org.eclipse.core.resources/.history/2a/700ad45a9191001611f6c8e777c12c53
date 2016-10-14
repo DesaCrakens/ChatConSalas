@@ -1,0 +1,22 @@
+package salaDeChat;
+
+import java.io.*;
+import java.util.*;
+import java.net.*;
+
+public class ServerThread extends Thread{
+
+	Socket s;
+	LinkedList <Socket> listaDifusion;
+	
+	public ServerThread(Socket sock, LinkedList<Socket> lD){
+		super();
+		this.s = sock;
+		this.listaDifusion = lD;
+	}
+	
+	public void run(){
+		
+	}
+	
+}
