@@ -1,7 +1,6 @@
 package salaDeChat;
 
-import java.io.DataInputStream;
-import java.io.IOException;
+import java.io.*;
 import java.net.*;
 import java.util.*;
 
@@ -9,9 +8,9 @@ import java.util.*;
 public class Listener extends Thread{
 	
 	ServerSocket svSocket;
-	LinkedList<Socket> sala1;
-	LinkedList<Socket> sala2;
-	LinkedList<Socket> sala3;
+	LinkedList<ObjectOutputStream> sala1;
+	LinkedList<ObjectOutputStream> sala2;
+	LinkedList<ObjectOutputStream> sala3;
 	
 	public Listener(){
 		try {
@@ -20,43 +19,49 @@ public class Listener extends Thread{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		sala1 = new LinkedList<Socket>();
-		sala2 = new LinkedList<Socket>();
-		sala3 = new LinkedList<Socket>();
+		sala1 = new LinkedList<ObjectOutputStream>();
+		sala2 = new LinkedList<ObjectOutputStream>();
+		sala3 = new LinkedList<ObjectOutputStream>();
 	}
 	
 	public void run(){
-		try {
-			DataInputStream in = null;
-			int nroSala;
-			while(true){
-				Socket s = this.svSocket.accept();
-				in = new DataInputStream(s.getInputStream());
-				nroSala = in.readInt();
-				if(nroSala == 1){
-					sala1.add(s);
-					new ServerThread(s,sala1).start();
-				}
-				else{
-					if(nroSala == 2){
-						sala2.add(s);
-						new ServerThread(s,sala2).start();
-					}
-					else{
-						sala3.add(s);
-						new ServerThread(s,sala3).start();
-					}
-				}
+		Socket s = null;
+		while(true){
+			try {
+				s = this.svSocket.accept();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			new SelectorSalaThread(s,this).start();
 		}
 	}
 	
+	public void agregarASala1(ObjectOutputStream oos){
+		this.sala1.add(oos);
+	}
+	
+	public void agregarASala2(ObjectOutputStream oos){
+		this.sala2.add(oos);
+	}
+	
+	public void agregarASala3(ObjectOutputStream oos){
+		this.sala3.add(oos);
+	}
+
+	public LinkedList<ObjectOutputStream> getSala1() {
+		return sala1;
+	}
+
+	public LinkedList<ObjectOutputStream> getSala2() {
+		return sala2;
+	}
+
+	public LinkedList<ObjectOutputStream> getSala3() {
+		return sala3;
+	}
 	
 	public static void main(String[] args) {
 		new Listener().start();
 	}
-	
 }

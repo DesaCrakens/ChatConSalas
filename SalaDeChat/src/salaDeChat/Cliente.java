@@ -17,16 +17,23 @@ public class Cliente {
 	public void iniciar(String ip, int puerto){
 		Scanner teclado = new Scanner(System.in);
 		String mensajeOut = " ";
-		DataOutputStream out = null;
-		DataInputStream in = null;
+		ObjectOutputStream out = null;
+		ObjectInputStream in = null;
 		System.out.println("Ingrese su nombre de usuario: ");
 		this.nombre = teclado.nextLine();
-		System.out.println("Ingrese nro. de sala a acceder: (1, 2 o 3): ");
 		try {
 			this.cliSocket = new Socket(ip,puerto);
-			out = new DataOutputStream(this.cliSocket.getOutputStream());
+			in = new ObjectInputStream(this.cliSocket.getInputStream());
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		new ClienThread(in).start();					//Este imprime todo lo que se escribe en el chat
+		try {
+			out = new ObjectOutputStream(this.cliSocket.getOutputStream());
 			this.enSala = teclado.nextInt();
 			out.writeInt(this.enSala);
+			out.flush();
 		} catch (UnknownHostException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -34,30 +41,24 @@ public class Cliente {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		try {
-			in = new DataInputStream(this.cliSocket.getInputStream());
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		new ClienThread(in).start();					//Este imprime todo lo que se escribe en el chat
-		while(!mensajeOut.equals(new String(this.nombre + ": /quit"))){			//si en el chat se escribe /quit se sale de la sala
+		while(!mensajeOut.equals(new String(this.nombre + ": /quit"))){			//si en el chat se escribe /quit sale
 			mensajeOut = this.nombre + ": " + teclado.nextLine();
 			try {
 				out.writeUTF(mensajeOut);
+				out.flush();
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
 		try {
-			out.close();
-			in.close();
 			this.cliSocket.close();
-			teclado.close();
+			teclado.close();			//cierro todo lo de este cliente
 		} catch (IOException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
+		} finally{
+			
 		}
 	}
 	public static void main(String[] args) {

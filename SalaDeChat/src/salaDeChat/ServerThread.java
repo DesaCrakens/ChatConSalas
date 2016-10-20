@@ -6,32 +6,45 @@ import java.net.*;
 
 public class ServerThread extends Thread{
 
-	Socket s;
-	LinkedList <Socket> listaDifusion;
+	private ObjectOutputStream oos;
+	private ObjectInputStream ois;
+	private LinkedList<ObjectOutputStream> listaDifusion;
+	private Socket s;
 	
-	public ServerThread(Socket sock, LinkedList<Socket> lD){
+	public ServerThread(Socket s, LinkedList<ObjectOutputStream> lD, ObjectInputStream ois, ObjectOutputStream oos){
 		super();
-		this.s = sock;
+		this.oos = oos;
+		this.ois = ois;
 		this.listaDifusion = lD;
+		this.s = s;
 	}
 	
 	public void run(){
-		String mensaje = null;
-		try {
-			DataOutputStream out;
-			DataInputStream in = new DataInputStream(this.s.getInputStream());
-			while(true){
-				if(in.available() > 0){
-					mensaje = in.readUTF();
-					for(Socket x : listaDifusion){
-						out = new DataOutputStream(x.getOutputStream());
-						out.writeUTF(mensaje);
-					}
+		String mensaje = " ";
+		while(!(mensaje.split(" ").length == 2 && new String("/quit").equals(mensaje.split(" ")[1]))){
+			try {
+				mensaje = ois.readUTF();
+				for(ObjectOutputStream x : listaDifusion){
+					x.writeUTF(mensaje);
+					x.flush();
+				}
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				try {
+					s.close();
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
 				}
 			}
-		}catch(Exception e){
+		}
+		listaDifusion.remove(oos);
+		try {
+			s.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
-	
+
 }
